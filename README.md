@@ -15,12 +15,12 @@ The interface is designed to be friendly, responsive, and optimized for both des
 ---
 
 ## 👥 Contributors
-| No. | Member | Công việc chính |
-|:--:|:------------|:--------|:----------------|
-| 1 | **Trần Gia Bảo** | Frontend, UI design, Docker deployment|
+| No. | Member | Responsibilities |
+|:--:|:------------|:--------|
+| 1 | Trần Gia Bảo | Frontend, UI design, Docker deployment|
 | 2 | Trương Quang Long | Analyst and Design system, Frontend, writing document |
 | 3 | Huỳnh Trọng Phúc | Testing, Backend, writing document  |
-| 4 | Nguyễn Minh Nhựt | Analyst and Design system, Backend, , writing document |
+| 4 | Nguyễn Minh Nhựt | Analyst and Design system, Backend, writing document |
 
 ---
 
