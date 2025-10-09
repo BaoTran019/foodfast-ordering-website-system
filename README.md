@@ -14,6 +14,14 @@ The interface is designed to be friendly, responsive, and optimized for both des
 
 ---
 
+## 🛠️ Technology Stack
+
+- **Frontend:** Built with **ReactJS**, providing a responsive and interactive user interface for the FoodFast Ordering System.  
+- **Backend:** Built with **Spring Boot**, handling all business logic.  
+- **Integration:** The frontend and backend are combined in this repository to form the full FoodFast Ordering System.
+
+---
+
 ## 👥 Contributors
 | No. | Member | Responsibilities |
 |:--:|:------------|:--------|
