@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend/wepApp
+    ports:
+      - "8080:8080"
+    networks:
+      - app-net
+    volumes:
+      - ~/.m2:/root/.m2   # dùng cache Maven host, tránh lỗi tải dependency
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge

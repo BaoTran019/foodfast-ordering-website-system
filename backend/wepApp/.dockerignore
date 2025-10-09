@@ -1,0 +1,27 @@
+# IDE files
+.idea
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Logs
+*.log
+logs/
+target/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Dockerfile / .dockerignore itself (optional)
+Dockerfile
+.dockerignore
+
+# Node / frontend (nếu project fullstack)
+node_modules/
+dist/
