@@ -15,6 +15,7 @@ Make sure you have **Docker** and **Docker Compose** installed.
 Then run:
 ```bash
 docker compose up -d 
+```
 
 ## 🔖 Note
 - Backend: Spring Boot (port 8080)
