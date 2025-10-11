@@ -63,7 +63,7 @@ function CartPage() {
               <div className="cart-item" key={item.productId}>
                 <img src={item.imageUrl} alt={item.productName} className="cart-img" />
                 <div className="cart-info">
-                  <h4>{item.name}</h4>
+                  <h4 style={{color:'#ff8c09'}}>{item.productName}</h4>
                   <p>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(item.price)}</p>
                   <div className="qty-controls">
                     <button onClick={() => handleQty(item.productId, -1)}>-</button>
