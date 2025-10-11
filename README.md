@@ -41,8 +41,15 @@ All icons used in this repository are **sourced from [Flaticon](https://www.flat
 
 ---
 
-## 🖼️ Demo Screenshots
-![Demo video](./previews/demo.mp4)
+## ⚙️ How to run
+
+### 🐳 Using Docker Compose
+Make sure you have **Docker** and **Docker Compose** installed.
+
+Then run:
+```bash
+docker compose up -d 
+```
 
 
 
