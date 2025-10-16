@@ -1,14 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
 import "./LoginModal.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import logo from "../../assets/logo/logo.png";
+import { AuthContext } from "../../context/AuthenticationContext"
+import { toast } from "react-toastify";
 
 function LoginModal({ show, handleClose }) {
+
+  const { auth, logIn } = useContext(AuthContext)
+  const [phone, setPhone] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false);
+
   const [formType, setFormType] = useState("login"); // login | forgot | register
 
   const switchToForgot = () => setFormType("forgot");
   const switchToLogin = () => setFormType("login");
   const switchToRegister = () => setFormType("register");
+
+  const handleLogIn = async (e) => {
+    e.preventDefault()
+    try {
+      await logIn(phone, password)
+      toast.success('Đăng nhập thành công')
+    } catch (err) {
+      toast.warning('Đăng nhập thất bại')
+    }
+    handleClose();
+  }
 
   const handleCloseModal = () => {
     setFormType("login"); // reset về login khi tắt
@@ -35,22 +55,20 @@ function LoginModal({ show, handleClose }) {
         {formType !== "forgot" && (
           <div className="login-tabs mb-4 text-center">
             <span
-              className={`fw-bold me-4 pb-2 ${
-                formType === "login"
-                  ? "border-bottom border-3 border-primary text-primary"
-                  : "text-muted"
-              }`}
+              className={`fw-bold me-4 pb-2 ${formType === "login"
+                ? "border-bottom border-3 border-primary text-primary"
+                : "text-muted"
+                }`}
               role="button"
               onClick={switchToLogin}
             >
               Đăng nhập
             </span>
             <span
-              className={`pb-2 ${
-                formType === "register"
-                  ? "border-bottom border-3 border-primary text-primary"
-                  : "text-muted"
-              }`}
+              className={`pb-2 ${formType === "register"
+                ? "border-bottom border-3 border-primary text-primary"
+                : "text-muted"
+                }`}
               role="button"
               onClick={switchToRegister}
             >
@@ -61,7 +79,7 @@ function LoginModal({ show, handleClose }) {
 
         {/* Form Đăng nhập */}
         {formType === "login" && (
-          <form>
+          <form onSubmit={handleLogIn}>
             <div className="mb-3">
               <label className="form-label">Số điện thoại</label>
               <input
@@ -70,17 +88,35 @@ function LoginModal({ show, handleClose }) {
                 placeholder="Nhập số điện thoại"
                 pattern="[0-9]{10,11}"
                 required
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
               />
             </div>
 
             <div className="mb-1">
               <label className="form-label">Mật khẩu</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                inputMode="text"
+                spellCheck="false"
                 className="form-control rounded-3"
                 placeholder="Nhập mật khẩu"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
+              <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  top: "75%",
+                  right: "8%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  color: "#666"
+                }} />
             </div>
 
             <div className="text-end mb-3">

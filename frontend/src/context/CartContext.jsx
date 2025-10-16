@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { AuthContext } from "./AuthenticationContext";
 import {
   getCart,
   addToCartApi,
@@ -13,7 +14,8 @@ export const CartContext = createContext();
 function CartProvider({ children }) {
   const [cart, setCart] = useState({ cartItems: [], totalPrice: 0 });
   const [loading, setLoading] = useState(true);
-  const userId = localStorage.getItem("userId");
+  const { auth } = useContext(AuthContext);
+  const userId = auth.userId;
 
   useEffect(() => {
     const fetchCartData = async () => {

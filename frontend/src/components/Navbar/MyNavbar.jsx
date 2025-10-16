@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { NavLink } from "react-router-dom";
 import "./MyNavbar.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,14 +8,30 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import logo from "../../assets/logo/logo.png";
+import { AuthContext } from '../../context/AuthenticationContext';
 
 // Import các modal
 import LoginModal from "../../Login/LoginModal/LoginModal";
+import Profile from '../../Profile/Profile';
 import CartAddressModal from "../CartModal/CartAddressModal";
 
 function MyNavbar({ darkMode, setDarkMode }) {
   const [showLogin, setShowLogin] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [showCartAddress, setShowCartAddress] = useState(false);
+
+  const { auth } = useContext(AuthContext)
+
+  const handleUserIconClick = () => {
+    if (!auth.userId){
+      setShowProfile(false)
+      setShowLogin(true)
+    }
+    else {
+      setShowLogin(false)
+      setShowProfile(true)
+    }
+  }
 
   return (
     <>
@@ -41,7 +57,7 @@ function MyNavbar({ darkMode, setDarkMode }) {
             {/* Menu user (login, cart, theme) */}
             <Nav className='user-menu navbar-nav me-2 ms-auto'>
               {/* Login Button */}
-              <Nav.Link href='#' onClick={() => setShowLogin(true)}>
+              <Nav.Link href='#' onClick={() => handleUserIconClick()}>
                 <i className="bi bi-person"></i>
               </Nav.Link>
 
@@ -61,6 +77,7 @@ function MyNavbar({ darkMode, setDarkMode }) {
 
       {/* Login Modal */}
       <LoginModal show={showLogin} handleClose={() => setShowLogin(false)} />
+      <Profile show={showProfile} handleClose={() => setShowProfile(false)}></Profile>
 
       {/* Cart Address Modal */}
       <CartAddressModal show={showCartAddress} onClose={() => setShowCartAddress(false)} />
