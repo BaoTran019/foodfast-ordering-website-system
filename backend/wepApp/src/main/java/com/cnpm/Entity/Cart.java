@@ -4,7 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
@@ -13,19 +15,25 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import jakarta.persistence.Column;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Carts") // tên Table trong database
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    @Column(name = "cartId")
+    private int cartId;
 
-    @Column(name = "userId")
-    private int userId;
+    @OneToOne
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
+    private User user;
 
     @Column(name = "totalPrice")
     private double totalPrice;
@@ -34,48 +42,14 @@ public class Cart {
     @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
 
-    // Constructors
-    public Cart() {
-    }
-
-    public Cart(int id, int userId, double totalPrice) {
-        this.id = id;
-        this.userId = userId;
-        this.totalPrice = totalPrice;
-    }
-
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
+    // Phương thức thêm CartItem vào Cart
     public void addCartItem(Product product, int quantity) {
-        CartItem item = new CartItem(this, product, quantity, product.getPrice());
-        cartItems.add(item);
-    }
-
-    public List<CartItem> getCartItems() {
-        return cartItems;
+        CartItem newItem = new CartItem();
+        newItem.setCart(this);
+        newItem.setProduct(product);
+        newItem.setQuantity(quantity);
+        newItem.setPrice(product.getPrice());
+        this.cartItems.add(newItem);
     }
 
 }

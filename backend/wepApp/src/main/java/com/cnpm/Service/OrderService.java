@@ -9,15 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 public interface OrderService {
 
-    List<Order> getAllOrders();
+    List<OrderDTO> getAllOrders();
 
     OrderDTO getOrderById(int id);
 
-    Order saveOrder(Order order);
+    OrderDTO saveOrder(OrderDTO order);
+
+    List<OrderDTO> getOrdersByStatus(String status);
 
     void deleteOrderById(int id);
-    
-    void updateOrderStatus(int orderId, String status);
 
-    OrderDTO createOrderFromCart(int cartId, String payment, String paymentMethod, String shipping_address);
+    OrderDTO updateOrderStatus(int orderId, String status);
+
+    OrderDTO createOrderFromCart(int cartId, String payment_method, String recipientName, String recipientPhone, String shipping_address);
 }

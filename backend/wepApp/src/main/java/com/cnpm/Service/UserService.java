@@ -12,12 +12,16 @@ public interface UserService {
 
     User getUserByPhone(String phone);
     
-    User getUserById(int id);
+    User getUserByUserId(int id);
 
     List<User> getAllUsers();
 
     User saveUser(User user);
     
-    void deleteById(int id);
+    void deleteByUserId(int id);
+
+    User changePassword(int id, String newPassword);
+
+    User changeInfo(int id, String fullName, String phone, String address, String email);
 
 }

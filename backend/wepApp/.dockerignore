@@ -1,27 +1,19 @@
-# IDE files
-.idea
-*.iml
-*.ipr
-*.iws
-.vscode/
-
 # Logs
 *.log
-logs/
-target/
+
+# IDE files
+*.iml
+.idea/
+.vscode/
+
+# Git files
+.git
+.gitignore
+
+# Docker files (nếu muốn tránh copy Dockerfile cũ)
+Dockerfile
+.dockerignore
 
 # OS files
 .DS_Store
 Thumbs.db
-
-# Git
-.git
-.gitignore
-
-# Dockerfile / .dockerignore itself (optional)
-Dockerfile
-.dockerignore
-
-# Node / frontend (nếu project fullstack)
-node_modules/
-dist/

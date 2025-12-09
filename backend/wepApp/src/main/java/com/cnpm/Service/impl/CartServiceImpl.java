@@ -68,15 +68,15 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         // tìm hoặc tạo mới cart theo user
-        Cart cart = cartRepo.findByUserId(user.getId())
+        Cart cart = cartRepo.findByUserUserId(user.getUserId())
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
-                    newCart.setUserId(user.getId());
+                    newCart.setUser(user);
                     return cartRepo.save(newCart);
                 });
         // kiểm tra xem product đã có trong cart chưa
         CartItem existingItem = cart.getCartItems().stream()
-                .filter(item -> item.getProduct().getId() == productId)
+                .filter(item -> item.getProduct().getProductId() == productId)
                 .findFirst()
                 .orElse(null);
 
@@ -89,7 +89,7 @@ public class CartServiceImpl implements CartService {
         }
         // Cập nhật total price
         cart.setTotalPrice(cart.getCartItems().stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum());
         cartRepo.save(cart);
         return convertToDTO(cart);
@@ -98,7 +98,10 @@ public class CartServiceImpl implements CartService {
     // Xóa toàn bộ items trong cart theo user
     @Override
     public void deleteAllCartItemsByUserId(int userId) {
-        Cart cart = cartRepo.findByUserId(userId)
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = cartRepo.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + userId));
         cart.getCartItems().clear();
         cart.setTotalPrice(0);
@@ -108,25 +111,32 @@ public class CartServiceImpl implements CartService {
     // Lấy toàn bộ items trong cart theo userId
     @Override
     public List<CartDTO> getCartItemsByUserId(int userId) {
-        Cart cart = cartRepo.findByUserId(userId)
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = cartRepo.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + userId));
+        
         return List.of(convertToDTO(cart));
     }
 
     // Xóa item trong cart theo itemId
     @Override
     public CartDTO deleteCartItemById(int userId, int productId) {
-        Cart cart = cartRepo.findByUserId(userId)
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Cart cart = cartRepo.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + userId));
 
         CartItem item = cart.getCartItems().stream()
-                .filter(ci -> ci.getProduct().getId() == productId)
+                .filter(ci -> ci.getProduct().getProductId() == productId)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Cart item not found for product id: " + productId));
 
         cart.getCartItems().remove(item);
         cart.setTotalPrice(cart.getCartItems().stream()
-                .mapToDouble(ci -> ci.getPrice() * ci.getQuantity())
+                .mapToDouble(ci -> ci.getProduct().getPrice() * ci.getQuantity())
                 .sum());
         cartRepo.save(cart);
         return convertToDTO(cart);
@@ -139,11 +149,11 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("Quantity delta must not be zero");
         }
 
-        Cart cart = cartRepo.findByUserId(userId)
+        Cart cart = cartRepo.findByUserUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found for user id: " + userId));
 
         CartItem item = cart.getCartItems().stream()
-                .filter(ci -> ci.getProduct().getId() == productId)
+                .filter(ci -> ci.getProduct().getProductId() == productId)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Cart item not found for product id: " + productId));
 
@@ -157,7 +167,7 @@ public class CartServiceImpl implements CartService {
 
         // Cập nhật total price
         cart.setTotalPrice(cart.getCartItems().stream()
-                .mapToDouble(ci -> ci.getPrice() * ci.getQuantity())
+                .mapToDouble(ci -> ci.getProduct().getPrice() * ci.getQuantity())
                 .sum());
 
         cartRepo.save(cart);
@@ -169,17 +179,17 @@ public class CartServiceImpl implements CartService {
     // Helper: convert Cart Entity -> CartDTO
     private CartDTO convertToDTO(Cart cart) {
         CartDTO dto = new CartDTO();
-        dto.setCartId(cart.getId());
-        dto.setUserId(cart.getUserId());
+        dto.setCartId(cart.getCartId());
+        dto.setUserId(cart.getUser().getUserId());
         dto.setTotalPrice(cart.getTotalPrice()); // tính tổng giá
         dto.setCartItems(cart.getCartItems()
                 .stream()
                 .map(item -> new ItemDTO(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(), // include product name in DTO
+                        item.getProduct().getProductId(),
+                        item.getProduct().getProductName(), // include product name in DTO
                         item.getProduct().getImageUrl(), // include image URL in DTO
                         item.getQuantity(),
-                        item.getPrice() // include price in DTO
+                        item.getProduct().getPrice() // include price in DTO
                 ))
                 .collect(Collectors.toList()));
         return dto;
@@ -188,8 +198,9 @@ public class CartServiceImpl implements CartService {
     // Helper: convert CartDTO -> Cart Entity
     private Cart convertToEntity(CartDTO dto) {
         Cart cart = new Cart();
-        cart.setId(dto.getCartId());
-        cart.setUserId(dto.getUserId());
+        cart.setCartId(dto.getCartId());
+        cart.setUser(userRepo.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found")));
         cart.setTotalPrice(dto.getTotalPrice());
         for (ItemDTO itemDTO : dto.getCartItems()) {
             // Giả sử bạn có một phương thức để tìm Product theo ID

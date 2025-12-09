@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-    private String name;
+    private String userName;
     private String password;
     private String email;
     private String address;
@@ -12,20 +12,20 @@ public class RegisterRequest {
     private String role = "USER"; // Default role
 
 
-    public RegisterRequest(String name, String password, String email, String address, String phone) {
-        this.name = name;
+    public RegisterRequest(String userName, String password, String email, String address, String phone) {
+        this.userName = userName;
         this.password = password;
         this.email = email;
         this.address = address;
         this.phone = phone;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {

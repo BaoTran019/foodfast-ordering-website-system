@@ -11,12 +11,12 @@ import org.springframework.data.jpa.repository.Query;
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
 
-    Optional<User> findById(int id);
+    User findByUserId(int userId);
 
-    @Query("SELECT u FROM User u WHERE u.name = :name")
-    Optional<User> findByName(@Param("name") String name);
+    // @Query("SELECT u FROM Users u WHERE u.fullName = :fullName")
+    Optional<User> findByFullName(@Param("fullName") String fullName);
 
-    @Query("SELECT u FROM User u WHERE u.phone = :phone")
+    // @Query("SELECT u FROM Users u WHERE u.phone = :phone")
     Optional<User> findByPhone(@Param("phone") String phone);
 
 }

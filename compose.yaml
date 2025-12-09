@@ -1,22 +1,54 @@
 services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: soft-test-sqlserver2022
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "My@Password"
+    ports:
+      - "1444:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+    networks:
+      - app-net
+
   backend:
     build: ./backend/wepApp
+    depends_on: 
+      - sqlserver
+    image: soft-test_backend
+    container_name: soft-test-backend
     ports:
       - "8080:8080"
     networks:
       - app-net
-    volumes:
-      - ~/.m2:/root/.m2   # dùng cache Maven host, tránh lỗi tải dependency
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:80"
+  website:
+    build: ./web
     depends_on:
       - backend
+    image: soft-test_web
+    container_name: soft-test-web
+    ports:
+      - "5173:80"
+    networks:
+      - app-net
+
+  monitor:
+    build: ./monitor
+    depends_on:
+      - backend
+    image: soft-test_monitor
+    container_name: soft-test-monitor
+    ports:
+      - "5174:80"
     networks:
       - app-net
 
 networks:
   app-net:
     driver: bridge
+
+volumes:
+  sqlserverdata:
