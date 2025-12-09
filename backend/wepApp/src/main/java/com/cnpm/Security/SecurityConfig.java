@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // disable CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // public API
-                        .requestMatchers("/api/users/**").hasRole("ADMIN") // chỉ ADMIN
+                        .requestMatchers("/api/users/**").permitAll() 
                         .requestMatchers("/api/products/**").permitAll() 
                         .requestMatchers("/api/payments/**").permitAll()
                         .requestMatchers("/api/orders/**").permitAll()

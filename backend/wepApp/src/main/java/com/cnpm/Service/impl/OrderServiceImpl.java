@@ -13,9 +13,11 @@ import com.cnpm.Entity.CartItem;
 import com.cnpm.Entity.Cart;
 import com.cnpm.Entity.Order;
 import com.cnpm.Repository.OrderRepo;
+import com.cnpm.Repository.PaymentRepo;
 import com.cnpm.Repository.CartRepo;
 import com.cnpm.Repository.ProductRepo;
 import com.cnpm.Entity.Product;
+import com.cnpm.Entity.Payment;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,19 +29,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepo orderRepo;
     private final CartRepo cartRepo;
     private final ProductRepo productRepo;
+    private final PaymentRepo paymentRepo;
     
     @PersistenceContext
     private EntityManager entityManager;
 
-    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo) {
+    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo, PaymentRepo paymentRepo) {
         this.orderRepo = orderRepo;
         this.cartRepo = cartRepo;
         this.productRepo = productRepo;
+        this.paymentRepo = paymentRepo;
     }
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepo.findAll();
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderRepo.findAll();
+        return orders.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -51,8 +58,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order saveOrder(Order order) {
-        return orderRepo.save(order);
+    public List<OrderDTO> getOrdersByStatus(String status) {
+        List<Order> orders = orderRepo.findByStatus(status);
+        return orders.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDTO saveOrder(OrderDTO order) {
+        Order entity = convertToEntity(order);
+        return convertToDTO(orderRepo.save(entity));
     }
 
     @Override
@@ -61,20 +77,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderStatus(int orderId, String status) {
-        OrderDTO order = getOrderById(orderId);
-        if (order == null) {
-            throw new RuntimeException("Order not found");
-        }
+    public OrderDTO updateOrderStatus(int orderId, String status) {
+        Order order = orderRepo.findByOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         order.setStatus(status);
-        orderRepo.save(convertToEntity(order));
+        orderRepo.save(order);
+        return convertToDTO(order);
     }
 
     // Tạo order từ cart
     @Override
     @Transactional
-    public OrderDTO createOrderFromCart(int userId, String payment, String paymentMethod, String shipping_address) {
-        Cart cart = cartRepo.findByUserId(userId)
+    public OrderDTO createOrderFromCart(int userId, String payment_method, String recipientName, String recipientPhone, String shipping_address) {
+        Cart cart = cartRepo.findByUserUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
         if (cart.getCartItems().isEmpty()) {
@@ -82,43 +98,58 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = new Order();
-        order.setUserId(cart.getUserId());
+        order.setUserId(cart.getUser().getUserId());
         for (CartItem cartItem : cart.getCartItems()) {
-            order.addOrderItems(cartItem.getProduct(), cartItem.getQuantity());
+            order.addOrderItems(cartItem.getProduct(), cartItem.getQuantity(), cartItem.getProduct().getPrice());
         }
         order.setStatus("Pending");
         order.setOrderDate(LocalDateTime.now());
-        order.setPayment(payment);
-        order.setPaymentMethod(paymentMethod);
-        order.setShipping_address(shipping_address);
+        order.setRecipientName(recipientName);
+        order.setRecipientPhone(recipientPhone);
+        order.setDeliveryAddress(shipping_address);
         order.setTotalPrice(cart.getTotalPrice());
         order = orderRepo.save(order);
+
+        Payment payment = new Payment();
+        payment.setOrderId(order.getOrderId());
+        payment.setPaymentMethod(payment_method);
+        payment.setAmount(order.getTotalPrice());
+        payment.setStatus("UNPAID");
+        payment.setPaymentDate(LocalDateTime.now());
+        paymentRepo.save(payment);
+        // Đảm bảo entity được cập nhật đầy đủ
         entityManager.refresh(order);
         // Xóa giỏ hàng sau khi tạo đơn hàng
-        cartRepo.delete(cart);
+        cart.getCartItems().clear();
+        cart.setTotalPrice(0);
+        cartRepo.save(cart);
         return convertToDTO(order);
     }
 
     // Helper: convert Order Entity -> OrderDTO
     private OrderDTO convertToDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-        dto.setOrderId(order.getId());
+        dto.setOrderId(order.getOrderId());
         dto.setUserId(order.getUserId());
         dto.setStatus(order.getStatus());
         dto.setTotalPrice(order.getTotalPrice());
-        dto.setPayment(order.getPayment());
-        dto.setPaymentMethod(order.getPaymentMethod());
-        dto.setShipping_address(order.getShipping_address());
+        dto.setDeliveryAddress(order.getDeliveryAddress());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setRecipientName(order.getRecipientName());
+        dto.setRecipientPhone(order.getRecipientPhone());
         dto.setOrderItems(order.getOrderItems()
                 .stream()
                 .map(item -> new ItemDTO(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(), // include product name in DTO
+                        item.getProduct().getProductId(),
+                        item.getProduct().getProductName(), // include product name in DTO
                         item.getProduct().getImageUrl(), // include image URL in DTO
                         item.getQuantity(),
-                        item.getPrice() // include price in DTO
+                        item.getProduct().getPrice() // include price in DTO
                 ))
                 .collect(Collectors.toList()));
+        Payment payment = paymentRepo.findByOrderId(order.getOrderId()).orElse(null);
+        dto.setPaymentMethod(payment != null ? payment.getPaymentMethod() : null);
+        dto.setPaymentStatus(payment != null ? payment.getStatus() : null);
 
         return dto;
     }
@@ -126,19 +157,19 @@ public class OrderServiceImpl implements OrderService {
     // Helper: convert OrderDTO -> Order Entity
     private Order convertToEntity(OrderDTO dto) {
         Order order = new Order();
-        order.setId(dto.getOrderId());
+        order.setOrderId(dto.getOrderId());
         order.setUserId(dto.getUserId());
         order.setOrderDate(dto.getOrderDate());
         order.setStatus(dto.getStatus());
         order.setTotalPrice(dto.getTotalPrice());
-        order.setPayment(dto.getPayment());
-        order.setPaymentMethod(dto.getPaymentMethod());
-        order.setShipping_address(dto.getShipping_address());
+        order.setDeliveryAddress(dto.getDeliveryAddress());
+        order.setRecipientName(dto.getRecipientName());
+        order.setRecipientPhone(dto.getRecipientPhone());
         for (ItemDTO itemDTO : dto.getOrderItems()) {
             // Giả sử bạn có một phương thức để tìm Product theo ID
             Product product = productRepo.findById(itemDTO.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-            order.addOrderItems(product, itemDTO.getQuantity());
+            order.addOrderItems(product, itemDTO.getQuantity(), product.getPrice());
         }
         return order;
     }

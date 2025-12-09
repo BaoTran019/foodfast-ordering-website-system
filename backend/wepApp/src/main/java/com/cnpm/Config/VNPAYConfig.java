@@ -36,7 +36,7 @@ public class VNPAYConfig {
     public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
     @Value("${vnp_ReturnUrl}")
-    public static String vnp_ReturnUrl = "http://localhost:8080/vnpay_return";
+    public static String vnp_ReturnUrl = "http://localhost:5173/vnpay-return";
 
     public static String md5(String message) {
         String digest = null;

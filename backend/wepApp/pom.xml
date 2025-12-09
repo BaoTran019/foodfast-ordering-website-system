@@ -56,11 +56,12 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
       		<artifactId>mssql-jdbc</artifactId>
+			<version>12.6.1.jre11</version>
       		<scope>runtime</scope>
-		</dependency> -->
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -142,25 +143,12 @@
 	</dependencies>
 
 	<build>
-    <plugins>
-        <!-- Plugin biên dịch -->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.14.0</version>
-            <configuration>
-                <source>21</source>
-                <target>21</target>
-                <release>21</release>
-            </configuration>
-        </plugin>
-
-        <!-- Plugin build cho Spring Boot -->
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

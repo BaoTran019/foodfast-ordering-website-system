@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,39 +42,52 @@ public class PaymentController {
         }
     }
 
-    // Cập nhật trạng thái
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Payment> updatePaymentStatus(
-            @PathVariable int id,
-            @RequestParam String status) {
-        return ResponseEntity.ok(paymentService.updateStatus(id, status));
-    }
-
     // Lấy chi tiết Payment
     @GetMapping("/{id}")
     public ResponseEntity<Payment> getPayment(@PathVariable int id) {
         return ResponseEntity.ok(paymentService.getPaymentByID(id));
     }
 
-    // Xử lý callback từ VNPAY
-    @GetMapping("/vnpay-return")
-    public ResponseEntity<String> vnpayReturn(HttpServletRequest request) {
-        // Lấy params mà VNPAY redirect kèm về
-        Map<String, String[]> paramMap = request.getParameterMap();
+    @GetMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verifyVnPay(
+            @RequestParam String vnp_TxnRef,
+            @RequestParam String vnp_SecureHash,
+            @RequestParam String vnp_ResponseCode
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        int orderId = Integer.parseInt(vnp_TxnRef);
 
-        Map<String, String> vnp_Params = paramMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()[0]));
+        // TODO: Verify vnp_SecureHash ở đây để đảm bảo không bị giả mạo
+        boolean hashValid = true; // placeholder, implement hash check theo VNPAY doc
 
-        String responseCode = vnp_Params.get("vnp_ResponseCode");
-        String txnRef = vnp_Params.get("vnp_TxnRef"); // orderId lúc tạo payment
-
-        if ("00".equals(responseCode)) {
-            // Update payment = PAID
-            orderService.updateOrderStatus(Integer.parseInt(txnRef), "PAID");
-            return ResponseEntity.ok("Thanh toán thành công cho orderId=" + txnRef);
-        } else {
-            // Update payment = FAILED
-            return ResponseEntity.ok("Thanh toán thất bại cho orderId=" + txnRef);
+        if (!hashValid) {
+            result.put("success", false);
+            result.put("message", "Hash không hợp lệ");
+            return ResponseEntity.badRequest().body(result);
         }
+
+        if ("00".equals(vnp_ResponseCode)) {
+            // Update order/payment = PAID
+            paymentService.updateStatus(orderId, "PAID");
+            result.put("success", true);
+            result.put("orderId", orderId);
+            result.put("message", "Thanh toán thành công");
+        } else {
+            // Update order/payment = FAILED
+            paymentService.updateStatus(orderId, "FAILED");
+            result.put("success", false);
+            result.put("orderId", orderId);
+            result.put("message", "Thanh toán thất bại");
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    // Cập nhật trạng thái Payment
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Payment> updatePaymentStatus(
+            @PathVariable int id,
+            @RequestParam String status) {
+        return ResponseEntity.ok(paymentService.updateStatus(id, status));
     }
 }

@@ -30,7 +30,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (path.startsWith("/api/auth/") ||
                 path.startsWith("/api/payments/") ||
                 path.startsWith("/api/products/") ||
-                path.startsWith("/api/carts/")) {
+                path.startsWith("/api/carts/") ||
+                path.startsWith("/api/users/")) {
             filterChain.doFilter(request, response);
             return;
         }

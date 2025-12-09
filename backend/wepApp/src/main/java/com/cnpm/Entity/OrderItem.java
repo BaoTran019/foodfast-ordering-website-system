@@ -7,15 +7,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+import jakarta.persistence.Column;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "OrderItems")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "orderItemId")
+    private int orderItemId;
 
     @ManyToOne
     @JoinColumn(name = "orderId")
@@ -27,47 +35,9 @@ public class OrderItem {
     @JsonBackReference
     private Product product;
 
+    @Column(name = "quantity")
     private int quantity;
 
-    private double price; // Price at the time of order
-
-    public OrderItem() {
-    }
-
-    public OrderItem(Order order, Product product, int quantity, double price) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    // Getters and Setters
-    public int getId() {
-        return id;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
+    @Column(name = "price")
+    private double price;
 }

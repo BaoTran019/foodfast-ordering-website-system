@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import com.cnpm.Service.CartService;
 import com.cnpm.Service.OrderService;
 import com.cnpm.DTO.OrderDTO;
-import com.cnpm.Entity.Order;
+
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -25,16 +24,16 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final CartService cartService;
 
-    public OrderController(OrderService orderService, CartService cartService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.cartService = cartService;
+
     }
 
     @GetMapping("")
-    List<Order> findAll() {
-        return orderService.getAllOrders();
+    ResponseEntity<List<OrderDTO>> findAll() {
+        List<OrderDTO> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")
@@ -50,14 +49,14 @@ public class OrderController {
     // POST
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    void create(@RequestBody Order order) {
+    void create(@RequestBody OrderDTO order) {
         orderService.saveOrder(order);
     }
 
     // PUT 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void update(@RequestBody Order order, @PathVariable int id) {
+    void update(@RequestBody OrderDTO order, @PathVariable int id) {
         orderService.saveOrder(order);
     }
 
@@ -70,19 +69,28 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("addFromCart/{userId}")
-    void addOrderFromCart(@PathVariable int userId,
-                        @RequestParam String payment,
-                        @RequestParam String paymentMethod,
+    ResponseEntity<OrderDTO> addOrderFromCart(@PathVariable int userId,
+                        @RequestParam String payment_method,
+                        @RequestParam String recipientName,
+                        @RequestParam String recipientPhone,
                         @RequestParam String shipping_address) {
-        orderService.createOrderFromCart(userId, payment, paymentMethod, shipping_address);
+        return ResponseEntity.ok(orderService.createOrderFromCart(userId, payment_method, recipientName, recipientPhone, shipping_address));
     }
     
     // Cập nhật trạng thái đơn hàng
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}/status")
-    void updateOrderStatus(@PathVariable int id, 
+    ResponseEntity<OrderDTO> updateOrderStatus(@PathVariable int id, 
                         @RequestParam String status) {
-        orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
-    
+
+    // Lấy danh sách đơn hàng theo status
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @GetMapping("/status/{status}")
+    ResponseEntity<List<OrderDTO>> findByStatus(@PathVariable String status) {
+        List<OrderDTO> orders = orderService.getOrdersByStatus(status);
+        return ResponseEntity.ok(orders);
+    }
+
 }
