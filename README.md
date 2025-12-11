@@ -41,6 +41,15 @@ The interface is designed to be friendly, responsive, and optimized for both des
 
 ---
 
+## 🔭 High-Level Overview
+![High-Level Overview](diagrams/C1.png)
+
+
+## 🧱 Application Architecture
+![Application Architecture](diagrams/C2.png)
+
+---
+
 ## 👥 Contributors
 | No. | Member | Responsibilities |
 |:--:|:------------|:--------|
