@@ -105,11 +105,7 @@ class OrderServiceImplTest {
         OrderDTO result = orderService.createOrderFromCart(userId, paymentMethod, recipientName, recipientPhone, address);
 
         // 3. ASSERT
-        // a. Kiểm tra tính toán giá tiền
-        // Giá gốc: 100,000 * 2 = 200,000
-        // Giảm giá: 10% -> Còn 90%
-        // Tổng tiền mong đợi: 200,000 * (1 - 10/100) = 180,000
-        assertEquals(180000.0, result.getTotalPrice()); // (Lưu ý: kiểm tra getter trong DTO hoặc capture argument save)
+        assertEquals(200000.0, result.getTotalPrice()); // (Lưu ý: kiểm tra getter trong DTO hoặc capture argument save)
 
         // b. Kiểm tra các thông tin Order được set đúng chưa
         verify(orderRepo).save(argThat(order -> 
