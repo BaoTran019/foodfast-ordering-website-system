@@ -21,7 +21,6 @@ import com.cnpm.Entity.Cart;
 import com.cnpm.Entity.Order;
 import com.cnpm.Entity.Product;
 import com.cnpm.Entity.User;
-import com.cnpm.Entity.Restaurant;
 import com.cnpm.Entity.Payment;
 import com.cnpm.Entity.CartItem;
 import com.cnpm.Repository.CartRepo;
@@ -52,22 +51,16 @@ class OrderServiceImplTest {
     private User mockUser;
     private Cart mockCart;
     private Product mockProduct;
-    private Restaurant mockRestaurant;
 
     @BeforeEach
     void setUp() {
         mockUser = new User();
         mockUser.setUserId(1);
 
-        mockRestaurant = new Restaurant();
-        mockRestaurant.setRestaurantId(99);
-        mockRestaurant.setRestaurantName("Pizza Hut");
-
         mockProduct = new Product();
         mockProduct.setProductId(100);
         mockProduct.setPrice(100000.0); // 100k
         mockProduct.setDiscount(10.0); // Giảm 10% (Trong code bạn chia 100 nên ở đây để 10)
-        mockProduct.setRestaurant(mockRestaurant);
 
         mockCart = new Cart();
         mockCart.setCartId(500);
@@ -124,7 +117,6 @@ class OrderServiceImplTest {
             order.getStatus().equals("Pending") &&
             order.getRecipientName().equals("Nguyen Van A") &&
             order.getDeliveryAddress().equals("123 Hanoi") &&
-            order.getRestaurant().getRestaurantName().equals("Pizza Hut")
         ));
 
         // c. Kiểm tra Payment được tạo
