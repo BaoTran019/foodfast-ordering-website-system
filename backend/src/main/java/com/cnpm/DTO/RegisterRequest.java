@@ -1,8 +1,12 @@
 package com.cnpm.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RegisterRequest {
     private String userName;
     private String password;
@@ -11,15 +15,7 @@ public class RegisterRequest {
     private String phone;
     private String role = "USER"; // Default role
 
-
-    public RegisterRequest(String userName, String password, String email, String address, String phone) {
-        this.userName = userName;
-        this.password = password;
-        this.email = email;
-        this.address = address;
-        this.phone = phone;
-    }
-
+    
     public String getUserName() {
         return userName;
     }
