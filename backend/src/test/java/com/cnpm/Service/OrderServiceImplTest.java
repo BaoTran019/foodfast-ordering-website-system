@@ -118,7 +118,7 @@ class OrderServiceImplTest {
         verify(paymentRepo).save(argThat(payment -> 
             payment.getOrderId() == 888 && // ID lấy từ order đã save
             payment.getStatus().equals("UNPAID") &&
-            payment.getAmount() == 180000.0
+            payment.getAmount()getAmount() == 200000.0
         ));
 
         // d. Kiểm tra Giỏ hàng đã bị xóa chưa
