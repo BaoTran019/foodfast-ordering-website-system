@@ -116,7 +116,7 @@ class OrderServiceImplTest {
         verify(orderRepo).save(argThat(order -> 
             order.getStatus().equals("Pending") &&
             order.getRecipientName().equals("Nguyen Van A") &&
-            order.getDeliveryAddress().equals("123 Hanoi") &&
+            order.getDeliveryAddress().equals("123 Hanoi")
         ));
 
         // c. Kiểm tra Payment được tạo
