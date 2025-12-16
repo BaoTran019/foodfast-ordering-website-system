@@ -1,17 +1,16 @@
 package com.cnpm.DTO;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
 
     private String phone;
     private String password;
-
-    public LoginRequest(String phone, String password) {
-        this.phone = phone;
-        this.password = password;
-    }
 
     public String getPhone() {
         return phone;
