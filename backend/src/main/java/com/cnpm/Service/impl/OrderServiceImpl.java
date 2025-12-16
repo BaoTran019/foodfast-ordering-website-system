@@ -90,6 +90,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderDTO createOrderFromCart(int userId, String payment_method, String recipientName, String recipientPhone, String shipping_address) {
+        
+        if (recipientName == null || recipientName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Recipient name is required");
+        }
+        if (shipping_address == null || shipping_address.trim().isEmpty()) {
+            throw new IllegalArgumentException("Shipping address is required");
+        }
+        if (recipientPhone == null || recipientPhone.trim().isEmpty()) {
+            throw new IllegalArgumentException("Recipient phone is required");
+        }
+        
         Cart cart = cartRepo.findByUserUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
