@@ -113,8 +113,7 @@ public class OrderServiceImpl implements OrderService {
         double totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems()) {
             order.addOrderItems(cartItem.getProduct(), cartItem.getQuantity(), cartItem.getProduct().getPrice());
-            totalPrice += cartItem.getQuantity() * cartItem.getProduct().getPrice()
-                    * (1 - cartItem.getProduct().getDiscount() / 100);
+            totalPrice += cartItem.getQuantity() * cartItem.getProduct().getPrice());
         }
         order.setStatus("Pending");
         order.setOrderDate(LocalDateTime.now());
