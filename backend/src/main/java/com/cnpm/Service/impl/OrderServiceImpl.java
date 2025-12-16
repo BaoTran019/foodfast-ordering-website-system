@@ -31,14 +31,16 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepo productRepo;
     private final PaymentRepo paymentRepo;
     
-    @PersistenceContext
     private EntityManager entityManager;
 
-    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo, PaymentRepo paymentRepo) {
+    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo, PaymentRepo paymentRepo,
+            DeliveryRepo deliveryRepo, EntityManager entityManager) {
         this.orderRepo = orderRepo;
         this.cartRepo = cartRepo;
         this.productRepo = productRepo;
         this.paymentRepo = paymentRepo;
+        this.deliveryRepo = deliveryRepo;
+        this.entityManager = entityManager;
     }
 
     @Override
