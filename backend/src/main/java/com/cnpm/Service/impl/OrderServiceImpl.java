@@ -30,17 +30,14 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepo cartRepo;
     private final ProductRepo productRepo;
     private final PaymentRepo paymentRepo;
-    private final DeliveryRepo deliveryRepo;
     
     private EntityManager entityManager;
 
-    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo, PaymentRepo paymentRepo,
-            DeliveryRepo deliveryRepo, EntityManager entityManager) {
+    public OrderServiceImpl(OrderRepo orderRepo, CartRepo cartRepo, ProductRepo productRepo, PaymentRepo paymentRepo, EntityManager entityManager) {
         this.orderRepo = orderRepo;
         this.cartRepo = cartRepo;
         this.productRepo = productRepo;
         this.paymentRepo = paymentRepo;
-        this.deliveryRepo = deliveryRepo;
         this.entityManager = entityManager;
     }
 
