@@ -60,7 +60,6 @@ class OrderServiceImplTest {
         mockProduct = new Product();
         mockProduct.setProductId(100);
         mockProduct.setPrice(100000.0); // 100k
-        mockProduct.setDiscount(10.0); // Giảm 10% (Trong code bạn chia 100 nên ở đây để 10)
 
         mockCart = new Cart();
         mockCart.setCartId(500);
