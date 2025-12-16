@@ -30,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepo cartRepo;
     private final ProductRepo productRepo;
     private final PaymentRepo paymentRepo;
+    private final DeliveryRepo deliveryRepo;
     
     private EntityManager entityManager;
 
