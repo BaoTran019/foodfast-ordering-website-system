@@ -110,15 +110,18 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUserId(cart.getUser().getUserId());
+        double totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems()) {
             order.addOrderItems(cartItem.getProduct(), cartItem.getQuantity(), cartItem.getProduct().getPrice());
+            totalPrice += cartItem.getQuantity() * cartItem.getProduct().getPrice()
+                    * (1 - cartItem.getProduct().getDiscount() / 100);
         }
         order.setStatus("Pending");
         order.setOrderDate(LocalDateTime.now());
         order.setRecipientName(recipientName);
         order.setRecipientPhone(recipientPhone);
         order.setDeliveryAddress(shipping_address);
-        order.setTotalPrice(cart.getTotalPrice());
+        order.setTotalPrice(totalPrice);
         order = orderRepo.save(order);
 
         Payment payment = new Payment();
