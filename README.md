@@ -79,7 +79,7 @@ Before starting the application, you must execute the following two SQL files in
 
 ## back-end
 ```bash
-cd monitor
+cd backend
 mvn clean package -DskipTests       #to build jar
 java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
