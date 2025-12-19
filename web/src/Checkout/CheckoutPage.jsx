@@ -33,11 +33,11 @@ function CheckoutPage() {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (cart.cartItems.length === 0) {
-      toast.error("Giỏ hàng chưa có sản phẩm để thanh toán");
-    }
-  }, [cart.cartItems]);
+  // useEffect(() => {
+  //   if (cart.cartItems.length === 0) {
+  //     toast.error("Giỏ hàng chưa có sản phẩm để thanh toán");
+  //   }
+  // }, [cart.cartItems]);
 
   if (cart.cartItems.length === 0) {
     return <Navigate to="/menu" replace />; // chuyển hướng về trang menu

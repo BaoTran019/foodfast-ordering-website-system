@@ -30,11 +30,11 @@ function CartPage() {
   }
 
   const handleRemoveAll = () => {
-    removeAllItems();
     if (cart.cartItems.length === 0) {
       toast.warning('Giỏ hàng chưa có món ăn')
     }
     else {
+      removeAllItems();
       toast.warning('Đã xóa tất cả khỏi giỏ hàng')
     }
   }
